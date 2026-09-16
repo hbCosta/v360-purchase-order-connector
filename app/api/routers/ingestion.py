@@ -7,6 +7,8 @@ from app.domain.models import PurchaseOrder
 from app.integrations.alfa import adapter as alfa_adapter
 from app.integrations.alfa.schemas import AlfaIngestionPayload
 from app.integrations.beta import adapter as beta_adapter
+from app.integrations.gama import adapter as gama_adapter
+from app.integrations.gama.schemas import GamaItemRow
 from app.storage.purchase_order_repository import purchase_order_repository
 
 router = APIRouter(prefix="/ingestion", tags=["ingestion"])
@@ -55,3 +57,13 @@ async def ingest_beta(
     except (AdapterParsingError, ValueError, ValidationError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return _store_and_summarize(SourceSystem.BETA, orders)
+
+
+@router.post("/gama", status_code=201)
+def ingest_gama(payload: list[GamaItemRow]) -> IngestionSummary:
+    """Recebe o JSON achatado do Gama, normaliza para o modelo canônico e armazena (RF7)."""
+    try:
+        orders = gama_adapter.parse_orders(payload)
+    except (AdapterParsingError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return _store_and_summarize(SourceSystem.GAMA, orders)
