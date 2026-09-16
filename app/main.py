@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 
+from app.api.routers import ingestion
+
 app = FastAPI(title="Conector de Pedidos de Compra V360")
+
+app.include_router(ingestion.router)
 
 
 @app.get("/health")
