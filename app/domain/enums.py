@@ -6,6 +6,7 @@ class SourceSystem(str, Enum):
 
     ALFA = "alfa"
     BETA = "beta"
+    GAMA = "gama"
 
 
 class OrderStatus(str, Enum):
