@@ -110,14 +110,24 @@ curl -X POST http://127.0.0.1:8000/ingestion/beta \
   -F "itens=@examples/beta_itens.csv;type=text/csv"
 ```
 
-**3. Consultar pedidos:**
+**3. Ingerir pedidos do Gama (JSON achatado, Parte 2):**
+```bash
+curl -X POST http://127.0.0.1:8000/ingestion/gama \
+  -H "Content-Type: application/json" \
+  --data-binary @examples/gama_payload.json
+```
+Repare que os itens em `CX` já saem convertidos para unidade de estoque na consulta — a
+quantidade e o preço "por caixa" nunca aparecem na API (ver item 4 abaixo).
+
+**4. Consultar pedidos:**
 ```bash
 curl http://127.0.0.1:8000/purchase-orders
 curl "http://127.0.0.1:8000/purchase-orders?source_system=alfa&has_pending=true"
 curl http://127.0.0.1:8000/purchase-orders/alfa/4500001234
+curl http://127.0.0.1:8000/purchase-orders/gama/GL-778
 ```
 
-**4. Conferir uma nota fiscal contra um pedido:**
+**5. Conferir uma nota fiscal contra um pedido:**
 ```bash
 curl -X POST http://127.0.0.1:8000/invoice-checks \
   -H "Content-Type: application/json" \
@@ -131,7 +141,7 @@ curl -X POST http://127.0.0.1:8000/invoice-checks \
 A resposta traz `status` (`COMPLIANT`/`DIVERGENT`) e, se divergente, a lista de `discrepancies`
 estruturadas (`type`, `material`, `message`, `expected`, `actual`).
 
-**5. Ver o relatório de conferências:**
+**6. Ver o relatório de conferências:**
 ```bash
 curl http://127.0.0.1:8000/reports/invoice-checks
 ```

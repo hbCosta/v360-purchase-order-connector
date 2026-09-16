@@ -282,7 +282,7 @@ Ingerir o payload de exemplo do Gama via API; listar pedidos filtrando `source_s
 detalhar um pedido do Gama; conferir uma nota fiscal (quantidade em unidades) contra ele.
 *Depende de*: T45.
 
-**T47 — Atualizar README com o impacto real da Parte 2**
+**T47 — Atualizar README com o impacto real da Parte 2** ✅ Concluída
 Seção nova no `README.md`: lista exata dos arquivos tocados (`design.md` §10) confirmando o que
 foi só adicionado (`integrations/gama/*`, rota nova) e o que exigiu tocar em código existente
 (uma linha em `SourceSystem`) — respondendo diretamente à pergunta do enunciado sobre o que mudou
