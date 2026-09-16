@@ -1,8 +1,8 @@
 # Conector de Pedidos de Compra V360
 
 Camada de integração que normaliza pedidos de compra de diferentes clientes (Alfa Energia, Beta
-Alimentos e, futuramente, Gama Logística) para um modelo canônico único, expondo uma API REST de
-consulta, conferência de nota fiscal e relatório de conferências.
+Alimentos e Gama Logística) para um modelo canônico único, expondo uma API REST de consulta,
+conferência de nota fiscal e relatório de conferências.
 
 A especificação completa (requisitos, design e plano de implementação) está em
 [`.kiro/specs/conector-pedidos-compra/`](.kiro/specs/conector-pedidos-compra/).
@@ -13,6 +13,7 @@ A especificação completa (requisitos, design e plano de implementação) está
 - [Como rodar o projeto](#como-rodar-o-projeto)
 - [Exemplos de uso](#exemplos-de-uso)
 - [Decisões que tomei](#decisões-que-tomei)
+- [Parte 2 — o que mudou para o Gama entrar](#parte-2--o-que-mudou-para-o-gama-entrar)
 - [O que eu faria diferente com mais tempo](#o-que-eu-faria-diferente-com-mais-tempo)
 
 ## Tecnologias
@@ -160,6 +161,28 @@ Resumo — o raciocínio completo, com alternativa considerada e trade-off para 
 - **Persistência em memória**, sem banco — adequado ao escopo de demonstração técnica, não a um
   ambiente produtivo (ver "o que eu faria diferente" abaixo).
 
+
+## Parte 2 — o que mudou para o Gama entrar
+
+O desafio pede explicitamente pra registrar isso. A arquitetura da Parte 1 foi desenhada pra que
+a entrada de um novo cliente fosse quase inteiramente aditiva — e foi:
+
+| Arquivo | Tipo de mudança |
+|---|---|
+| `app/integrations/gama/schemas.py`, `adapter.py` | **Novo** — código específico do Gama |
+| `app/domain/enums.py` | **1 linha adicionada** — `GAMA = "gama"` no `SourceSystem` |
+| `app/api/routers/ingestion.py` | **Aditivo** — nova rota `POST /ingestion/gama` (+12 linhas, 0 removidas) |
+| `app/normalization/dates.py`, `money.py` | **Aditivo** — novas funções (`parse_unix_timestamp`, `cents_to_decimal`); nada existente foi alterado |
+| `app/domain/models.py`, `services/*` (regras de negócio), demais routers (`purchase_orders.py`, `invoice_checks.py`, `reports.py`) | **Zero alteração** |
+
+Confirmado com `git diff parte-1 -- app/services/`: nenhuma linha mudou nos três services
+(`purchase_order_service`, `invoice_check_service`, `report_service`) desde a tag que marca o
+fim da Parte 1.
+
+A particularidade mais delicada do Gama — quantidade e preço na unidade de compra (`CX` +
+`fator_conv`) — ficou inteiramente contida em `integrations/gama/adapter.py`: a conversão pra
+unidade de estoque acontece no momento da ingestão, então a regra de conferência de nota fiscal
+nunca precisou saber o que é uma caixa.
 
 ## O que eu faria diferente com mais tempo
 
