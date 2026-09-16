@@ -21,3 +21,12 @@ def parse_br_decimal(value: str) -> Decimal:
     """Converte um número no padrão brasileiro (Beta), ex.: `"1.200,000"` → `Decimal("1200.000")`."""
     normalized = value.strip().replace(".", "").replace(",", ".")
     return Decimal(normalized)
+
+
+def cents_to_decimal(value: int) -> Decimal:
+    """Converte um valor em centavos (Gama), ex.: `120000` → `Decimal("1200.00")`.
+
+    Ainda é o preço da unidade de compra quando `um == "CX"` — a conversão para unidade de
+    estoque acontece depois, no adapter do Gama (design.md §4.4).
+    """
+    return Decimal(value) / 100
