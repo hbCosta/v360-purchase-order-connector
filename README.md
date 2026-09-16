@@ -24,7 +24,7 @@ A especificação completa (requisitos, design e plano de implementação) está
 - **Docker** — execução sem precisar instalar Python localmente
 
 Sem banco de dados, ORM, fila ou biblioteca de CSV: dependências mínimas e justificadas (detalhe
-em `design.md`, seção 15).
+em `design.md`, seção 12).
 
 ## Como rodar o projeto
 
@@ -142,7 +142,7 @@ Todos os endpoints também podem ser explorados interativamente em `/docs` (Swag
 ### Arquitetura
 
 Resumo — o raciocínio completo, com alternativa considerada e trade-off para cada uma, está em
-`.kiro/specs/conector-pedidos-compra/design.md` (seção 14):
+`.kiro/specs/conector-pedidos-compra/design.md` (seção 11):
 
 - **Um adapter por cliente** (`integrations/alfa`, `integrations/beta`), cada um absorvendo 100%
   das particularidades daquele formato (campos, datas, números, vocabulário de situação). Nenhuma
