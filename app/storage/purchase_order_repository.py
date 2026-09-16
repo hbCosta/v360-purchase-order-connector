@@ -19,6 +19,10 @@ class PurchaseOrderRepository:
     def get(self, source_system: SourceSystem, po_number: str) -> PurchaseOrder | None:
         return self._orders.get((source_system, po_number))
 
+    def clear(self) -> None:
+        """Remove todos os pedidos armazenados. Uso principal: isolar testes entre si."""
+        self._orders.clear()
+
     def list(
         self,
         source_system: SourceSystem | None = None,
