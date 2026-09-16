@@ -160,28 +160,6 @@ Resumo — o raciocínio completo, com alternativa considerada e trade-off para 
 - **Persistência em memória**, sem banco — adequado ao escopo de demonstração técnica, não a um
   ambiente produtivo (ver "o que eu faria diferente" abaixo).
 
-### Regras de negócio assumidas
-
-O desafio deixa algumas regras em aberto de propósito. Resumo direto (detalhe completo em
-`requirements.md`, seções 7 e 8):
-
-- **Moeda é sempre BRL** — nenhum requisito menciona múltiplas moedas.
-- **Quantidade recebida ausente é tratada como `0`**.
-- **Cada material aparece no máximo uma vez por pedido** — se repetir, a conferência soma o saldo
-  pendente das linhas casadas, mas usa o preço unitário da primeira.
-- **A nota fiscal referencia explicitamente o pedido a conferir** (`source_system` + `po_number`).
-- **Beta: o termo para pedido "encerrado" não aparece nas amostras.** Assumi `ENCERRADO`, por
-  analogia com `closed` (Alfa) e `2` (Gama) — ajuste de uma linha se o sistema real usar outro.
-- **Conferência é uma operação de leitura — não altera o pedido.** Não atualiza
-  `quantity_received`; conferências repetidas contra o mesmo pedido sempre comparam contra o
-  mesmo saldo pendente. **Essa é a decisão de maior risco de reinterpretação do desafio** — se a
-  regra esperada for "a conferência consome o saldo a cada nota", isso exigiria evoluir o domínio
-  (um histórico de recebimento), não só ajustar um adapter.
-- **Pedido inexistente na conferência retorna `404`** — erro de pré-condição, não divergência.
-- **Sem tolerância numérica de preço.** Arredondamento a 2 casas só elimina ruído de
-  representação decimal; qualquer diferença real, mesmo de um centavo, ainda gera
-  `PRICE_MISMATCH`.
-- **Sem autenticação/autorização** — não mencionado pelo desafio.
 
 ## O que eu faria diferente com mais tempo
 
@@ -192,10 +170,5 @@ O desafio deixa algumas regras em aberto de propósito. Resumo direto (detalhe c
   de schema — hoje os dados somem a cada restart.
 - **Autenticação/autorização na API**, já que qualquer um com acesso à rede pode ingerir dados ou
   consultar pedidos.
-- **CI** (GitHub Actions) rodando a suíte de testes e lint a cada push/PR, em vez de só local.
-- **Suporte a mais de uma linha do mesmo material por pedido** — hoje é uma limitação documentada
-  (suposição S3), não coberta pelas amostras do desafio.
 - **Observabilidade**: logging estruturado e métricas básicas (conferências por minuto, latência
   por endpoint) — hoje só existe o log padrão do Uvicorn.
-- **Versionamento da API** (`/v1`) para poder evoluir o contrato sem quebrar integrações
-  existentes quando um novo cliente trouxer um requisito realmente novo.
