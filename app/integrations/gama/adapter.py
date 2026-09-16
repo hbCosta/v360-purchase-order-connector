@@ -14,12 +14,15 @@ GAMA_STATUS_MAP: dict[int, OrderStatus] = {
     3: OrderStatus.BLOCKED,
 }
 
+STOCKING_UOM = "UN"
+PURCHASE_UOM_WITH_FACTOR = "CX"
+
 
 def parse_orders(payload: list[GamaItemRow]) -> list[PurchaseOrder]:
     """Converte o JSON achatado do Gama para o modelo canônico (RF7).
 
     Não existe cabeçalho separado: os dados do pedido se repetem em cada linha de item — usa-se
-    os valores da primeira linha de cada grupo. Ainda sem conversão de unidade de compra (T42).
+    os valores da primeira linha de cada grupo.
     """
     grouped: dict[str, list[GamaItemRow]] = defaultdict(list)
     for row in payload:
@@ -45,14 +48,28 @@ def _parse_order(po_number: str, rows: list[GamaItemRow]) -> PurchaseOrder:
 
 
 def _parse_item(row: GamaItemRow) -> PurchaseOrderItem:
+    quantity_ordered = parse_decimal(row.qtd_ped)
+    quantity_received = parse_decimal(row.qtd_rec)
+    unit_price = cents_to_decimal(row.preco_unit_centavos)
+    uom = row.um
+
+    if row.um == PURCHASE_UOM_WITH_FACTOR:
+        # Nota fiscal sempre informa quantidade em unidades — converte aqui, na fronteira, pra
+        # que o resto do sistema nunca precise saber o que é "CX"/fator_conv (design.md §4.4).
+        fator = parse_decimal(row.fator_conv)
+        quantity_ordered *= fator
+        quantity_received *= fator
+        unit_price /= fator
+        uom = STOCKING_UOM
+
     return PurchaseOrderItem(
         line=row.item,
         material=row.cod_mat,
         description=row.desc_mat,
-        uom=row.um,
-        quantity_ordered=parse_decimal(row.qtd_ped),
-        quantity_received=parse_decimal(row.qtd_rec),
-        unit_price=cents_to_decimal(row.preco_unit_centavos),
+        uom=uom,
+        quantity_ordered=quantity_ordered,
+        quantity_received=quantity_received,
+        unit_price=unit_price,
     )
 
 
