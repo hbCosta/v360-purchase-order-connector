@@ -1,0 +1,119 @@
+### Conector de Pedidos de Compra V360 — coleção de requests
+### Compatível com a extensão "REST Client" do VS Code (humao.rest-client) ou `httpyac`.
+### Rode a aplicação antes (README.md — Opção A ou B) em http://127.0.0.1:8000.
+
+@baseUrl = http://127.0.0.1:8000
+
+### 0. Health check
+GET {{baseUrl}}/health
+
+
+### 1. Ingerir pedidos do Alfa (JSON aninhado)
+POST {{baseUrl}}/ingestion/alfa
+Content-Type: application/json
+
+< ./examples/alfa_payload.json
+
+
+### 2. Ingerir pedidos do Beta (dois CSVs, multipart)
+POST {{baseUrl}}/ingestion/beta
+Content-Type: multipart/form-data; boundary=----v360Boundary
+
+------v360Boundary
+Content-Disposition: form-data; name="cabecalho"; filename="beta_cabecalho.csv"
+Content-Type: text/csv
+
+< ./examples/beta_cabecalho.csv
+------v360Boundary
+Content-Disposition: form-data; name="itens"; filename="beta_itens.csv"
+Content-Type: text/csv
+
+< ./examples/beta_itens.csv
+------v360Boundary--
+
+
+### 3. Ingerir pedidos do Gama (JSON achatado, Parte 2)
+POST {{baseUrl}}/ingestion/gama
+Content-Type: application/json
+
+< ./examples/gama_payload.json
+
+
+### 4. Listar todos os pedidos
+GET {{baseUrl}}/purchase-orders
+
+
+### 5. Listar pedidos com filtros (origem + saldo pendente)
+GET {{baseUrl}}/purchase-orders?source_system=alfa&has_pending=true
+
+
+### 6. Detalhe de um pedido do Alfa
+GET {{baseUrl}}/purchase-orders/alfa/4500001234
+
+
+### 7. Detalhe de um pedido do Gama (unidades já convertidas de CX para UN)
+GET {{baseUrl}}/purchase-orders/gama/GL-778
+
+
+### 8. Detalhe de pedido inexistente (404)
+GET {{baseUrl}}/purchase-orders/alfa/0000000
+
+
+### 9. Conferir nota fiscal — CONFORME (Alfa)
+POST {{baseUrl}}/invoice-checks
+Content-Type: application/json
+
+{
+  "source_system": "alfa",
+  "po_number": "4500001234",
+  "vendor": { "tax_id": "23456789000101", "name": "Metalúrgica São Jorge S.A." },
+  "items": [ { "material": "MAT-1001", "quantity": 40, "total_value": 1836.00 } ]
+}
+
+
+### 10. Conferir nota fiscal — DIVERGENTE: material inexistente no pedido (Alfa)
+POST {{baseUrl}}/invoice-checks
+Content-Type: application/json
+
+{
+  "source_system": "alfa",
+  "po_number": "4500001234",
+  "vendor": { "tax_id": "23456789000101", "name": "Metalúrgica São Jorge S.A." },
+  "items": [ { "material": "MAT-9999", "quantity": 5, "total_value": 100.00 } ]
+}
+
+
+### 11. Conferir nota fiscal — DIVERGENTE: fornecedor + quantidade + preço (Gama)
+POST {{baseUrl}}/invoice-checks
+Content-Type: application/json
+
+{
+  "source_system": "gama",
+  "po_number": "GL-778",
+  "vendor": { "tax_id": "99999999000199", "name": "Fornecedor Errado" },
+  "items": [ { "material": "TRP-01", "quantity": 999, "total_value": 1.00 } ]
+}
+
+
+### 12. Conferir nota fiscal contra pedido inexistente (404)
+POST {{baseUrl}}/invoice-checks
+Content-Type: application/json
+
+{
+  "source_system": "alfa",
+  "po_number": "0000000",
+  "vendor": { "tax_id": "23456789000101", "name": "X" },
+  "items": [ { "material": "MAT-1001", "quantity": 1, "total_value": 45.9 } ]
+}
+
+
+### 13. Histórico de conferências (sem filtro)
+GET {{baseUrl}}/invoice-checks
+
+
+### 14. Histórico de conferências filtrado por pedido específico
+GET {{baseUrl}}/invoice-checks?source_system=alfa&po_number=4500001234
+
+
+### 15. Relatório agregado de conferências
+GET {{baseUrl}}/reports/invoice-checks

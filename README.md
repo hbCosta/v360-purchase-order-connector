@@ -96,6 +96,13 @@ A imagem instala só as dependências de runtime; os testes rodam fora do contai
 Com a aplicação rodando (Opção A ou B) em `http://127.0.0.1:8000`. Os arquivos de exemplo ficam
 em [`examples/`](examples/) — os mesmos dados de amostra do enunciado do desafio.
 
+**Coleção de requests pronta**: [`requests.http`](requests.http) tem os 15 principais requests da
+API (ingestão dos três clientes, consulta, conferência conforme/divergente, relatório) já
+prontos pra rodar, sem precisar copiar `curl` um por um. Funciona com a extensão
+[REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) do VS Code
+(clique em "Send Request" acima de cada bloco) ou via linha de comando com `npx httpyac send
+requests.http --all`.
+
 **1. Ingerir pedidos do Alfa (JSON):**
 ```bash
 curl -X POST http://127.0.0.1:8000/ingestion/alfa \
