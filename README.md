@@ -211,9 +211,10 @@ nunca precisou saber o que é uma caixa.
 - **Validar a ambiguidade de maior risco com o time de negócio antes de tudo**: se a conferência
   deveria consumir o saldo pendente (funcionar como um recebimento) em vez de ser stateless — é a
   decisão que mais mudaria a arquitetura do domínio.
-- **Implementar um evento de recebimento de mercadoria** (equivalente a um MIGO) separado da
-  conferência de nota fiscal (equivalente a um MIRO) — um endpoint que incrementa
-  `quantity_received` de um item ao longo do tempo, em vez desse valor vir pronto só na ingestão.
+- **Implementar um evento de recebimento de mercadoria**, conceitualmente semelhante ao processo
+  de MIGO no SAP, separado da conferência da nota fiscal, conceitualmente relacionada à MIRO. O
+  recebimento registraria as quantidades efetivamente recebidas de cada item ao longo do tempo,
+  permitindo calcular o total recebido e o saldo pendente do pedido.
 - **Persistência real** (Postgres, por exemplo) no lugar do repositório em memória, com migração
   de schema — hoje os dados somem a cada restart.
 - **Autenticação/autorização na API**, já que qualquer um com acesso à rede pode ingerir dados ou
