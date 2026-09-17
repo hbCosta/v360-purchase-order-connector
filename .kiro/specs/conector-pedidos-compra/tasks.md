@@ -289,6 +289,6 @@ foi só adicionado (`integrations/gama/*`, rota nova) e o que exigiu tocar em c�
 para o Gama entrar.
 *Depende de*: T46.
 
-**T48 — Commit e tag `parte-2`**
+**T48 — Commit e tag `parte-2`** ✅ Concluída
 Commitar o estado final e criar `git tag parte-2`.
 *Depende de*: T47.
