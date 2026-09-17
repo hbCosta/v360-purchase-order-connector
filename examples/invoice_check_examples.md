@@ -1,7 +1,7 @@
 # Exemplos de nota fiscal para `POST /invoice-checks`
 
-O desafio não fornece um formato de exemplo pra nota fiscal (só pra pedido de compra) — quem a
-envia é a própria V360, não o sistema do cliente. Este arquivo junta exemplos prontos pra colar
+O desafio não fornece um formato de exemplo pra nota fiscal (só pra pedido de compra).
+Este arquivo junta exemplos prontos pra colar
 no Swagger (`/docs`) ou usar com `curl`, cobrindo os cinco tipos de resultado (conforme + os
 quatro tipos de divergência) para os três clientes.
 
