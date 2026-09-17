@@ -141,6 +141,11 @@ curl -X POST http://127.0.0.1:8000/invoice-checks \
 A resposta traz `status` (`COMPLIANT`/`DIVERGENT`) e, se divergente, a lista de `discrepancies`
 estruturadas (`type`, `material`, `message`, `expected`, `actual`).
 
+Como o desafio não fornece um formato de nota fiscal de exemplo (só de pedido de compra — quem
+envia a nota é a própria V360), reunimos em
+[`examples/invoice_check_examples.md`](examples/invoice_check_examples.md) um exemplo pronto de
+cada tipo de resultado (conforme + os 4 tipos de divergência) para Alfa, Beta e Gama.
+
 **6. Ver o relatório de conferências:**
 ```bash
 curl http://127.0.0.1:8000/reports/invoice-checks

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.api.schemas.invoice_check import InvoiceCheckRequest, InvoiceCheckResponse
+from app.domain.enums import CheckStatus, SourceSystem
 from app.domain.exceptions import PurchaseOrderNotFoundError
 from app.domain.invoice import Invoice, InvoiceItem
 from app.domain.models import Vendor
@@ -40,7 +41,16 @@ def create_invoice_check(payload: InvoiceCheckRequest) -> InvoiceCheckResponse:
 
 
 @router.get("")
-def list_invoice_checks() -> list[InvoiceCheckResponse]:
-    """Histórico de conferências já realizadas (apoio a RF6)."""
-    results = invoice_check_repository.list()
+def list_invoice_checks(
+    source_system: SourceSystem | None = None,
+    po_number: str | None = None,
+    status: CheckStatus | None = None,
+) -> list[InvoiceCheckResponse]:
+    """Histórico de conferências já realizadas, com filtros opcionais (apoio a RF6).
+
+    Sem filtro nenhum, devolve o histórico inteiro — o comportamento de antes é preservado.
+    """
+    results = invoice_check_repository.list(
+        source_system=source_system, po_number=po_number, status=status
+    )
     return [InvoiceCheckResponse.model_validate(result) for result in results]
