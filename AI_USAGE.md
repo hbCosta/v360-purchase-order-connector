@@ -2,7 +2,7 @@
 
 ## Quais ferramentas usei e em quais partes
 
-Usei o **Claude Code** (modelo Claude Sonnet 5, da Anthropic) do início ao fim do desafio, em
+Usei o **Claude Code** (modelo Claude Sonnet 5, da Anthropic) em
 todas as etapas:
 
 - **Planejamento** — antes de escrever qualquer código, pedi um processo de spec-driven
@@ -64,12 +64,6 @@ de design tecnicamente válida, mas não ideal pro problema de negócio:
    `invoice_check_service`, a abordagem era interromper a validação assim que a primeira
    divergência fosse encontrada e devolver só ela. Percebi que isso obrigaria a V360 a corrigir
    um problema, repetir a conferência, e só então descobrir o próximo — lento pra quem opera.
-   Direcionei pra rodar **todas** as verificações e acumular todas as divergências numa única
-   resposta (ex.: `VENDOR_MISMATCH` + `QUANTITY_EXCEEDS_PENDING` + `PRICE_MISMATCH` juntos, se for
-   o caso), o que virou requisito formal (RF5.2) e está coberto por teste específico
-   (`TestMultipleSimultaneousDiscrepancies`). Esse caso foi diferente dos dois anteriores: não era
-   um bug de código, era uma solução tecnicamente válida (e mais simples) que eu precisei avaliar
-   contra o problema de negócio antes de aceitar.
 
 O que me deu segurança nos três casos não foi confiar na primeira resposta da IA, mas ter pedido
 pra rodar os testes e mostrar o resultado a cada etapa, ter lido o que os testes realmente
